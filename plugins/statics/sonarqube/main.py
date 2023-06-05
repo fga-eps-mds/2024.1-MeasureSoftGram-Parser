@@ -12,9 +12,12 @@ class Sonarqube:
         )
 
     def parser_data(self, input_file):
-        parsed_values = [input_file.get("baseComponent",[]),input_file.get("components",[])]
-        return self.__extract_sonarqube_supported_metrics(parsed_values)
+        parsed_values = []
+        parsed_values.append(input_file["baseComponent"])
+        # parsed_values.append(input_file["baseComponent"])
+        parsed_values.extend(input_file["components"])
 
+        return self.__extract_sonarqube_supported_metrics(parsed_values)
 
     def extract_supported_metrics(self, metrics, first_request=False):
         data = SONARQUBE_AVAILABLE_METRICS
@@ -44,6 +47,7 @@ class Sonarqube:
         ]
 
         for component in metrics:
+            print("component ", component)
             qualifier = component["qualifier"]
             path = component["path" if qualifier != "TRK" else "name"]
             collected_metrics[path] = {"qualifier": qualifier, "measures": []}

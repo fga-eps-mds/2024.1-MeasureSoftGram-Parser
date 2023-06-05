@@ -1,3 +1,4 @@
+import importlib
 import os
 import json
 import pandas as pd
@@ -38,20 +39,18 @@ class ParserGeneric:
         return full_json.get(type_input)
 
     def call_plugin(self, path_plugin, file_input):
-        # path_plugin = os.path.join(os.path.dirname(__file__), path_plugin)
-        plugin = __import__(path_plugin)
-        return plugin.parse(file_input)
+        module_name = "plugins.statics.sonarqube.main"
+        path_plugin = os.path.join(os.path.dirname(__file__), path_plugin)
+        plugin = importlib.import_module(module_name)
+        return plugin.parser(file_input)
 
 
 if __name__ == "__main__":
     json_file = json.load(
         open(
-            "fga-eps-mds-2023-1-MeasureSoftGram-CLI-05-25-2023-23-27-31-develop.json",
+            "fga-eps-mds-2023-1-MeasureSoftGram-Service-05-27-2023-02-54-12-v1.0.0.json",
             "r",
         )
     )
-    dict_input = {
-        "type_input":"sonarqube",
-        "input_value":json_file
-    }
+    dict_input = {"type_input": "sonarqube", "input_value": json_file}
     print(ParserGeneric().parse(**dict_input))
