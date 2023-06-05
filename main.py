@@ -12,6 +12,7 @@ class ParserGeneric:
         self.file_path = file_path_configuration or self.file_path_configuration
 
     def parse(self, **kwargs):
+        print(kwargs.get("type_input"))
         input_value = kwargs.get("input_value")
         type_input = kwargs.get("type_input")
         acepted_types = self.get_acepted_types()
@@ -37,6 +38,20 @@ class ParserGeneric:
         return full_json.get(type_input)
 
     def call_plugin(self, path_plugin, file_input):
-        path_plugin = os.path.join(os.path.dirname(__file__), path_plugin)
+        # path_plugin = os.path.join(os.path.dirname(__file__), path_plugin)
         plugin = __import__(path_plugin)
         return plugin.parse(file_input)
+
+
+if __name__ == "__main__":
+    json_file = json.load(
+        open(
+            "fga-eps-mds-2023-1-MeasureSoftGram-CLI-05-25-2023-23-27-31-develop.json",
+            "r",
+        )
+    )
+    dict_input = {
+        "type_input":"sonarqube",
+        "input_value":json_file
+    }
+    print(ParserGeneric().parse(**dict_input))
