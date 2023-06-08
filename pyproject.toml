@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "msgram"
+version = "1.1.1"
+description = "The msgram CLI is a command-line interface to use MeasureSoftGram software"
+readme = "README.md"
+authors = [
+    { name = "MeasureSoftGram", email = "measuresoftgram@gmail.com" }
+]
+license = { file = "LICENSE" }
+classifiers = [
+    "Environment :: Console",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Natural Language :: Portuguese (Brazilian)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Topic :: Utilities",
+]
+keywords = ["parser", "measures", "quality", "algebraic model"]
+requires-python = ">=3.8"
+dependencies = [
+        "requests==2.26.0",
+        "wheel==0.37.0",
+        "pytest==6.2.5",
+        "numpy==1.24",
+        "pandas==2.0.0",
+    ]
+
+
+[tool.mypy]
+strict = true
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov", "setuptools", "wheel"]
+
+[tool.setuptools.packages]
+find = {}
+strict = true
