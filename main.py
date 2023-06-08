@@ -44,13 +44,12 @@ class ParserGeneric:
         plugin = importlib.import_module(module_name)
         return plugin.parser(file_input)
 
+    # pd = name_of_path x measure
 
-if __name__ == "__main__":
-    json_file = json.load(
-        open(
-            "fga-eps-mds-2023-1-MeasureSoftGram-Service-05-27-2023-02-54-12-v1.0.0.json",
-            "r",
-        )
-    )
-    dict_input = {"type_input": "sonarqube", "input_value": json_file}
-    print(ParserGeneric().parse(**dict_input))
+    def transform_df_to_python_dict(self, pandas_dataframe: pd.DataFrame):
+        returned_dict = {}
+        for column in pandas_dataframe.columns:
+            returned_dict[column] = []
+            for index, value in pandas_dataframe[column].items():
+                returned_dict[column].append({"metric": index, "value": value})
+        return returned_dict
