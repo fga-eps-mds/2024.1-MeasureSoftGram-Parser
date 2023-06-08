@@ -10,6 +10,28 @@ class Sonarqube:
         self.endpoint = os.getenv(
             "SONAR_URL", "https://sonarcloud.io/api/metrics/search"
         )
+    
+    def process_json(data):
+        metrics = []
+        keys = []
+        values = []
+
+    # Iterar sobre os dados e extrair as informações
+        for entry in data:
+            key = entry["key"]
+            measures = entry["measures"]
+            for measure in measures:
+                metric = measure["metric"]
+                value = measure["value"]
+                metrics.append(metric)
+                keys.append(key)
+                values.append(value)
+
+    # Criar o DataFrame
+        df = pd.DataFrame({"key": keys, "metric": metrics, "value": values})
+        df_pivot = df.pivot(index="metric", columns="key", values="value")
+        
+        return df_pivot
 
     def parser_data(self, input_file):
         parsed_values = []
