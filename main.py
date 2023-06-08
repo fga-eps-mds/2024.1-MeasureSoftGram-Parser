@@ -13,7 +13,6 @@ class ParserGeneric:
         self.file_path = file_path_configuration or self.file_path_configuration
 
     def parse(self, **kwargs):
-        print(kwargs.get("type_input"))
         input_value = kwargs.get("input_value")
         type_input = kwargs.get("type_input")
         acepted_types = self.get_acepted_types()
@@ -28,7 +27,7 @@ class ParserGeneric:
         else:
             raise Exception("Return from parser error, return type not acepted")
 
-        return return_from_plugin
+        return self.transform_df_to_python_dict(return_from_plugin)
 
     def get_acepted_types(self):
         full_json = json.load(open(self.file_path, "r"))
@@ -43,8 +42,6 @@ class ParserGeneric:
         path_plugin = os.path.join(os.path.dirname(__file__), path_plugin)
         plugin = importlib.import_module(module_name)
         return plugin.parser(file_input)
-
-    # pd = name_of_path x measure
 
     def transform_df_to_python_dict(self, pandas_dataframe: pd.DataFrame):
         returned_dict = {}
