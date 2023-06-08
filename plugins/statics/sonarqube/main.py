@@ -2,7 +2,7 @@ import os
 
 import requests
 
-from staticfiles import SONARQUBE_AVAILABLE_METRICS, SONARQUBE_SUPPORTED_MEASURES
+from plugins.statics.sonarqube.staticfiles import SONARQUBE_AVAILABLE_METRICS, SONARQUBE_SUPPORTED_MEASURES
 
 
 class Sonarqube:
