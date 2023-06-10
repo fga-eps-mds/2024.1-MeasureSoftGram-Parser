@@ -4,7 +4,6 @@ import requests
 import pandas as pd
 from plugins.statics.sonarqube.staticfiles import (
     SONARQUBE_AVAILABLE_METRICS,
-    SONARQUBE_SUPPORTED_MEASURES,
 )
 
 
