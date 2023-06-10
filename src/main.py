@@ -38,9 +38,8 @@ class ParserGeneric:
         return full_json.get(type_input)
 
     def call_plugin(self, path_plugin, file_input):
-        module_name = "plugins.statics.sonarqube.main"
         path_plugin = os.path.join(os.path.dirname(__file__), path_plugin)
-        plugin = importlib.import_module(module_name)
+        plugin = importlib.import_module(path_plugin)
         return plugin.parser(file_input)
 
     def transform_df_to_python_dict(self, pandas_dataframe: pd.DataFrame):
