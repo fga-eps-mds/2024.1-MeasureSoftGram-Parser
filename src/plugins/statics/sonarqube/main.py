@@ -24,8 +24,7 @@ class Sonarqube:
         except Exception:
             data = SONARQUBE_AVAILABLE_METRICS
 
-        finally:
-            return data
+        return data
 
     def parser_data(self, input_file):
         metrics = []
