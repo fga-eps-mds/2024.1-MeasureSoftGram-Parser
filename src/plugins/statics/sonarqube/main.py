@@ -4,7 +4,6 @@ import requests
 import pandas as pd
 from plugins.statics.sonarqube.staticfiles import (
     SONARQUBE_AVAILABLE_METRICS,
-    SONARQUBE_SUPPORTED_MEASURES,
 )
 
 
@@ -24,8 +23,7 @@ class Sonarqube:
         except Exception:
             data = SONARQUBE_AVAILABLE_METRICS
 
-        finally:
-            return data
+        return data
 
     def parser_data(self, input_file):
         metrics = []
