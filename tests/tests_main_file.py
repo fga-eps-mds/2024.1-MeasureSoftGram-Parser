@@ -1,4 +1,4 @@
-from main import ParserGeneric
+from src.main import ParserGeneric
 from tests.mockfiles.mock_input_pandas_transform import dataframe_input
 from tests.mockfiles.mock_output_pandas_transform import dict_output
 
