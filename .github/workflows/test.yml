@@ -1,48 +1,43 @@
 name: Rodar Testes
 
 on:
-  push:
-    branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
+    push:
+        branches: [develop]
+    pull_request:
+        branches: [develop]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-          cache: pip
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.10"
+                  cache: pip
 
-      - name: Instalar requirements
-        run: pip install -r requirements.txt
+            - name: Instalar requirements
+              run: pip install -r requirements.txt
 
-      - name: Instalar tox
-        run: pip install tox
+            - name: Instalar tox
+              run: pip install tox
 
-      - name: Rodar testes
-        run: tox
+            - name: Rodar testes
+              run: tox
 
-      - name: Scanner do SonarCloud
-        uses: SonarSource/sonarcloud-github-action@v1.8
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Envia cobertura para o Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./
-          env_vars: OS,PYTHON
-          fail_ci_if_error: true
-          files: ./coverage.xml
-          flags: unittests
-          name: 2023-1-MeasureSoftGram-Parser
-          verbose: true
+            - name: Envia cobertura para o Codecov
+              uses: codecov/codecov-action@v3
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  directory: ./
+                  env_vars: OS,PYTHON
+                  fail_ci_if_error: true
+                  files: ./coverage.xml
+                  flags: unittests
+                  name: 2023-1-MeasureSoftGram-Parser
+                  verbose: true
