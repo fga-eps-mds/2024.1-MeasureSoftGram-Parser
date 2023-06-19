@@ -14,8 +14,8 @@ class ParserGeneric:
     def parse(self, **kwargs):
         input_value = kwargs.get("input_value")
         type_input = kwargs.get("type_input")
-        acepted_types = self.get_acepted_types()
-        if type_input not in acepted_types:
+        accepted_types = self.get_acepted_types()
+        if type_input not in accepted_types:
             raise Exception("Type not acepted")
 
         path_plugin = self.get_path_plugin(type_input)
@@ -24,9 +24,13 @@ class ParserGeneric:
         if isinstance(return_from_plugin, pd.DataFrame):
             self.df = return_from_plugin
         else:
-            raise Exception("Return from parser error, return type not acepted")
+            self.df = self.get_df_from_parser(return_from_plugin)
+        return self.transform_df_to_python_dict(self.df)
 
-        return self.transform_df_to_python_dict(return_from_plugin)
+    def get_df_from_parser(self, dict_input: dict):
+        df = pd.DataFrame(dict_input)
+        df_pivot = df.pivot(index="metrics", columns="file_paths", values="values")
+        return df_pivot
 
     def get_acepted_types(self):
         full_json = json.load(open(self.file_path, "r"))
@@ -37,9 +41,9 @@ class ParserGeneric:
         return full_json.get(type_input)
 
     def call_plugin(self, path_plugin, file_input):
-        path_plugin = os.path.join(os.path.dirname(__file__), path_plugin)
         plugin = importlib.import_module(path_plugin)
-        return plugin.parser(file_input)
+        object = plugin.main()
+        return object.parser(**{"input_value": file_input})
 
     def transform_df_to_python_dict(self, pandas_dataframe: pd.DataFrame):
         returned_dict = {}
