@@ -1,7 +1,5 @@
 import importlib
 import math
-import os
-import json
 import pandas as pd
 from genericparser.accept_plugins import ACCEPT_PLUGINS
 
@@ -41,6 +39,8 @@ class GenericParser:
         return ACCEPT_PLUGINS.get(type_input)
 
     def call_plugin(self, path_plugin, file_input):
+        print(path_plugin)
+        print("type(path_plugin)", type(path_plugin))
         plugin = importlib.import_module(path_plugin)
         object = plugin.main()
         return object.parser(**{"input_value": file_input})
