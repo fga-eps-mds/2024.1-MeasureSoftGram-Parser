@@ -17,6 +17,8 @@ class GenericStaticABC(metaclass=abc.ABCMeta):
         return self.validate_return_type(return_value)
 
     def get_if_input_is_file_or_str(self, input_value):
+        if isinstance(input_value, dict):
+            return input_value
         if os.path.isfile(input_value):
             path = os.path.abspath(input_value)
             with open(path, "r") as file:

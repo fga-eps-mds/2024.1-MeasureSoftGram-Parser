@@ -1,10 +1,9 @@
+import os
 from genericparser.plugins.domain.generic_class import GenericStaticABC
 import requests
 
 
 class ParserGithub(GenericStaticABC):
-    token = ""
-
     def _make_request(self, url, token):
         headers = {
             "Authorization": f"token {token}",
@@ -68,11 +67,14 @@ class ParserGithub(GenericStaticABC):
             **self._get_statistics_weekly_code_frequency(base_url, token),
         }
 
-    def extract(self, input_file, token=None):
-        if token or token == "":
-            self.token = input_file.get("token", None) or self.token
+    def extract(self, input_file):
+        token_from_github = input_file.get("token", None) or os.environ.get(
+            "GITHUB_TOKEN", None
+        )
         repository = (
-            input_file.get("repository", None) if input_file is dict else input_file
+            input_file.get("repository", None)
+            if (type(input_file) == dict)
+            else input_file
         )
         metrics = []
         keys = repository
@@ -81,12 +83,14 @@ class ParserGithub(GenericStaticABC):
         url = f"https://api.github.com/repos/{owner}/{repository_name}"
 
         # Get comunity metrics
-        return_of_comunity_metrics = self._get_comunity_metrics(url, self.token)
+        return_of_comunity_metrics = self._get_comunity_metrics(url, token_from_github)
         metrics.extend(return_of_comunity_metrics["metrics"])
         values.extend(return_of_comunity_metrics["values"])
 
         # Get statistics metrics
-        return_of_statistics_metrics = self._get_statistics_metrics(url, self.token)
+        return_of_statistics_metrics = self._get_statistics_metrics(
+            url, token_from_github
+        )
         metrics.extend(return_of_statistics_metrics["metrics"])
         values.extend(return_of_statistics_metrics["values"])
 
