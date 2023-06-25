@@ -1,8 +1,4 @@
 import json
-import pytest
-from requests import Response
-
-from unittest.mock import patch
 
 from genericparser.genericparser import GenericParser
 
