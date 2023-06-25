@@ -6,15 +6,7 @@ class ParserSonarQube(GenericStaticABC):
         metrics = []
         keys = []
         values = []
-
-        input_interable = []
         for entry in input_file:
-            if type(input_file[entry]) == list:
-                input_interable.extend(input_file[entry])
-            else:
-                input_interable.append(input_file[entry])
-
-        for entry in input_interable:
             key = entry.get("key", {})
             measures = entry.get("measures", [])
             for measure in measures:
