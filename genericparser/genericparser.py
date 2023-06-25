@@ -53,5 +53,5 @@ class GenericParser:
             for index, value in pandas_dataframe[column].items():
                 returned_dict[column].append(
                     {"metric": index, "value": value}
-                ) if value != None else None
+                ) if value is not None else None
         return returned_dict
