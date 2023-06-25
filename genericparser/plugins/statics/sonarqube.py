@@ -1,4 +1,4 @@
-from plugins.domain.generic_class import GenericStaticABC
+from genericparser.plugins.domain.generic_class import GenericStaticABC
 
 
 class ParserSonarQube(GenericStaticABC):
