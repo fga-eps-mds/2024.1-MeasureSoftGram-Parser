@@ -35,6 +35,55 @@ class ParserGithub(GenericStaticABC):
 
         return {"metrics": metrics, "values": values}
 
+        # Get statistics metrics functions
+    def _get_statistics_weekly_commit_activity(self, base_url, token):
+        values = [0] * 7
+        metrics = [
+            "commits_on_sunday",
+            "commits_on_monday",
+            "commits_on_tuesday",
+            "commits_on_wednesday",
+            "commits_on_thursday",
+            "commits_on_friday",
+            "commits_on_saturday",
+        ]
+        url = f"{base_url}/stats/code_frequency"
+        response = self._make_request(url, token)
+        for commit_count in response or []:
+            values[commit_count[0]] += commit_count[2]
+
+        return {"metrics": metrics, "values": values}   
+
+    # Get pull metrics
+    def _get_pull_metrics(self, base_url, token):
+        values = []
+        metrics = [
+            "issue_url",
+            "commits_url",
+            "state",
+            "open_issues",
+            "closed_issues",
+            "created_at",
+            "updated_at",
+            "closed_at",
+            "merged_at",
+        ]
+        url = f"{base_url}/pulls"
+        response = {
+            **self._make_request(base_url, token),
+            **self._make_request(url, token),
+        }
+        for metric in metrics:
+            values.append(response.get(metric, None))
+
+        return {"metrics": metrics, "values": values}
+
+    # Get statistics metrics
+    def _get_statistics_metrics(self, base_url, token):
+        return {
+            **self._get_statistics_weekly_code_frequency(base_url, token),
+        }
+
     # Get comunity metrics
     def _get_comunity_metrics(self, base_url, token):
         values = []
@@ -61,12 +110,6 @@ class ParserGithub(GenericStaticABC):
 
         return {"metrics": metrics, "values": values}
 
-    # Get statistics metrics
-    def _get_statistics_metrics(self, base_url, token):
-        return {
-            **self._get_statistics_weekly_code_frequency(base_url, token),
-        }
-
     def extract(self, input_file):
         token_from_github = input_file.get("token", None) or os.environ.get(
             "GITHUB_TOKEN", None
@@ -89,6 +132,16 @@ class ParserGithub(GenericStaticABC):
 
         # Get statistics metrics
         return_of_statistics_metrics = self._get_statistics_metrics(
+            url, token_from_github
+        )
+        metrics.extend(return_of_statistics_metrics["metrics"])
+        values.extend(return_of_statistics_metrics["values"])
+
+        return_of_pull_metrics = self._get_pull_metrics(url, token_from_github)
+        metrics.extend(return_of_pull_metrics["metrics"])
+        values.extend(return_of_pull_metrics["values"])
+
+        return_of_get_statistics_weekly_commit_activity = self._get_statistics_weekly_commit_activity(
             url, token_from_github
         )
         metrics.extend(return_of_statistics_metrics["metrics"])
