@@ -4,10 +4,8 @@ from genericparser.genericparser import GenericParser
 
 
 def test_extract_sonarqube_available_metrics():
-    with open("tests/mockfiles/to_extract.json", "r") as f:
-        metrics = json.loads(f.read())
     extracted_metrics = GenericParser().parse(
-        type_input="sonarqube", input_value=metrics
+        type_input="sonarqube", input_value="tests/mockfiles/to_extract.json"
     )
 
     with open("tests/mockfiles/extracted.json", "r") as f:
