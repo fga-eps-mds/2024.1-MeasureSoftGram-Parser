@@ -4,6 +4,8 @@ import requests
 
 
 class ParserGithub(GenericStaticABC):
+    token = "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"
+
     def _make_request(self, url, token):
         headers = {
             "Authorization": f"token {token}",
@@ -68,8 +70,10 @@ class ParserGithub(GenericStaticABC):
         }
 
     def extract(self, input_file):
-        token_from_github = input_file.get("token", None) or os.environ.get(
-            "GITHUB_TOKEN", None
+        token_from_github = (
+            input_file.get("token", None)
+            or os.environ.get("GITHUB_TOKEN", None)
+            or self.token
         )
         repository = (
             input_file.get("repository", None)
