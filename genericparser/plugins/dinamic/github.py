@@ -54,29 +54,53 @@ class ParserGithub(GenericStaticABC):
 
         return {"metrics": metrics, "values": values}   
 
-    # Get pull metrics
-    def _get_pull_metrics(self, base_url, token):
-        values = []
-        metrics = [
-            "issue_url",
-            "commits_url",
-            "state",
-            "open_issues",
-            "closed_issues",
-            "created_at",
-            "updated_at",
-            "closed_at",
-            "merged_at",
-        ]
-        url = f"{base_url}/pulls"
-        response = {
-            **self._make_request(base_url, token),
-            **self._make_request(url, token),
-        }
-        for metric in metrics:
-            values.append(response.get(metric, None))
+def _get_pull_metrics_by_threshold(self, base_url, token):
+    values = []
+    metrics = [
+        "issue_url",
+        "commits_url",
+        "state",
+        "open_issues",
+        "closed_issues",
+        "created_at",
+        "updated_at",
+        "closed_at",
+        "merged_at",
+    ]
+    url = f"{base_url}/pulls"
+    response = self._make_request(url, token)  
+    pull_requests = response if isinstance(response, list) else []
+    
+    total_issues = len(pull_requests)
+    resolved_issues = sum(1 for pr in pull_requests if pr["state"] == "closed")
 
-        return {"metrics": metrics, "values": values}
+    values.extend([total_issues, resolved_issues, resolved_issues / total_issues if total_issues > 0 else 0])
+
+    return {"metrics": metrics + ["total_issues", "resolved_issues", "resolved_ratio"], "values": values}
+
+    # Get pull metrics
+
+def _get_pull_metrics(self, base_url, token):
+    values = []
+    metrics = [
+        "issue_url",
+        "commits_url",
+        "state",
+        "open_issues",
+        "closed_issues",
+        "created_at",
+        "updated_at",
+        "closed_at",
+        "merged_at",
+    ]
+    url = f"{base_url}/pulls"
+    response = self._make_request(url, token)  
+    pull_requests = response if isinstance(response, list) else []
+
+    for pull_request in pull_requests:
+        values.extend([pull_request.get(metric, None) for metric in metrics])
+    print(metrics)
+    return {"metrics": metrics, "values": values}
 
     # Get statistics metrics
     def _get_statistics_metrics(self, base_url, token):
@@ -146,6 +170,10 @@ class ParserGithub(GenericStaticABC):
         )
         metrics.extend(return_of_statistics_metrics["metrics"])
         values.extend(return_of_statistics_metrics["values"])
+
+        return_of_get_pull_metrics_by_threshold  - self._get_pull_metrics_by_threshold(url, token_from_github)
+        metrics.extend(return_of_pull_metrics["metrics"])
+        values.extend(return_of_pull_metrics["values"])
 
         return {"metrics": metrics, "values": values, "file_paths": keys}
 
