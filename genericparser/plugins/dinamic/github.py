@@ -4,11 +4,14 @@ import requests
 
 
 class ParserGithub(GenericStaticABC):
-    token = "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"
+    token = None
+
+    def __init__(self, token=None):
+        self.token = token
 
     def _make_request(self, url, token):
         headers = {
-            "Authorization": f"Bearer {token}",
+            "Authorization": f"Bearer {token}" if token else "",
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
         }
