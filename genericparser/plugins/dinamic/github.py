@@ -76,7 +76,6 @@ def _get_pull_metrics_by_threshold(self, base_url, token):
     url = f"{base_url}/pulls"
     response = self._make_request(url, token)
     pull_requests = response if isinstance(response, list) else []
-    
     total_issues = len(pull_requests)
     resolved_issues = sum(1 for pr in pull_requests if pr["state"] == "closed")
 
@@ -85,6 +84,7 @@ def _get_pull_metrics_by_threshold(self, base_url, token):
     return {"metrics": metrics + ["total_issues", "resolved_issues", "resolved_ratio"], "values": values}
 
     # Get pull metrics
+
 
 def _get_pull_metrics(self, base_url, token):
     values = []
