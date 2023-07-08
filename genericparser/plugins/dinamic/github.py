@@ -4,9 +4,14 @@ import requests
 
 
 class ParserGithub(GenericStaticABC):
+    token = None
+
+    def __init__(self, token=None):
+        self.token = token
+
     def _make_request(self, url, token):
         headers = {
-            "Authorization": f"token {token}",
+            "Authorization": f"Bearer {token}" if token else "",
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
         }
@@ -135,8 +140,10 @@ def _get_pull_metrics(self, base_url, token):
         return {"metrics": metrics, "values": values}
 
     def extract(self, input_file):
-        token_from_github = input_file.get("token", None) or os.environ.get(
-            "GITHUB_TOKEN", None
+        token_from_github = (
+            input_file.get("token", None)
+            if type(input_file) == dict
+            else None or os.environ.get("GITHUB_TOKEN", None) or self.token
         )
         repository = (
             input_file.get("repository", None)
