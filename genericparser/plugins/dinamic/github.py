@@ -57,7 +57,8 @@ class ParserGithub(GenericStaticABC):
         for commit_count in response or []:
             values[commit_count[0]] += commit_count[2]
 
-        return {"metrics": metrics, "values": values}   
+        return {"metrics": metrics, "values": values}
+
 
 def _get_pull_metrics_by_threshold(self, base_url, token):
     values = []
@@ -73,7 +74,7 @@ def _get_pull_metrics_by_threshold(self, base_url, token):
         "merged_at",
     ]
     url = f"{base_url}/pulls"
-    response = self._make_request(url, token)  
+    response = self._make_request(url, token)
     pull_requests = response if isinstance(response, list) else []
     
     total_issues = len(pull_requests)
@@ -99,7 +100,7 @@ def _get_pull_metrics(self, base_url, token):
         "merged_at",
     ]
     url = f"{base_url}/pulls"
-    response = self._make_request(url, token)  
+    response = self._make_request(url, token)
     pull_requests = response if isinstance(response, list) else []
 
     for pull_request in pull_requests:
@@ -175,12 +176,12 @@ def _get_pull_metrics(self, base_url, token):
         return_of_get_statistics_weekly_commit_activity = self._get_statistics_weekly_commit_activity(
             url, token_from_github
         )
-        metrics.extend(return_of_statistics_metrics["metrics"])
-        values.extend(return_of_statistics_metrics["values"])
+        metrics.extend(return_of_get_statistics_weekly_commit_activity["metrics"])
+        values.extend(return_of_get_statistics_weekly_commit_activity["values"])
 
-        return_of_get_pull_metrics_by_threshold  - self._get_pull_metrics_by_threshold(url, token_from_github)
-        metrics.extend(return_of_pull_metrics["metrics"])
-        values.extend(return_of_pull_metrics["values"])
+        return_of_get_pull_metrics_by_threshold = self._get_pull_metrics_by_threshold(url, token_from_github)
+        metrics.extend(return_of_get_pull_metrics_by_threshold["metrics"])
+        values.extend(return_of_get_pull_metrics_by_threshold["values"])
 
         return {"metrics": metrics, "values": values, "file_paths": keys}
 
