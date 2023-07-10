@@ -15,7 +15,7 @@ class ParserGithub(GenericStaticABC):
             "X-GitHub-Api-Version": "2022-11-28",
         }
         if token:
-            headers["Authorization"] = (f"Bearer {token}",)
+            headers["Authorization"] = f"Bearer {token}"
         try:
             response = requests.get(url, headers=headers)
         except Exception as e:
@@ -53,27 +53,16 @@ class ParserGithub(GenericStaticABC):
             "commits_on_friday",
             "commits_on_saturday",
         ]
-        url = f"{base_url}/stats/code_frequency"
+        url = f"{base_url}/stats/punch_card"
         response = self._make_request(url, token)
         for commit_count in response or []:
-            values[commit_count[0]] += commit_count[2]
+            values[commit_count[0]] += commit_count[-1]
 
         return {"metrics": metrics, "values": values}
 
     def _get_pull_metrics_by_threshold(self, base_url, token=None):
         values = []
-        metrics = [
-            "issue_url",
-            "commits_url",
-            "state",
-            "open_issues",
-            "closed_issues",
-            "created_at",
-            "updated_at",
-            "closed_at",
-            "merged_at",
-        ]
-        url = f"{base_url}/pulls"
+        url = f"{base_url}/pulls?state=all"
         response = self._make_request(url, token)
         pull_requests = response if isinstance(response, list) else []
         total_issues = len(pull_requests)
@@ -88,32 +77,9 @@ class ParserGithub(GenericStaticABC):
         )
 
         return {
-            "metrics": metrics + ["total_issues", "resolved_issues", "resolved_ratio"],
+            "metrics": ["total_issues", "resolved_issues", "resolved_ratio"],
             "values": values,
         }
-
-        # Get pull metrics
-
-    def _get_pull_metrics(self, base_url, token=None):
-        values = []
-        metrics = [
-            "issue_url",
-            "commits_url",
-            "state",
-            "open_issues",
-            "closed_issues",
-            "created_at",
-            "updated_at",
-            "closed_at",
-            "merged_at",
-        ]
-        url = f"{base_url}/pulls"
-        response = self._make_request(url, token)
-        pull_requests = response if isinstance(response, list) else []
-
-        for pull_request in pull_requests:
-            values.extend([pull_request.get(metric, None) for metric in metrics])
-        return {"metrics": metrics, "values": values}
 
     # Get statistics metrics
     def _get_statistics_metrics(self, base_url, token=None):
@@ -121,25 +87,32 @@ class ParserGithub(GenericStaticABC):
             **self._get_statistics_weekly_code_frequency(base_url),
         }
 
+    #  get all Pull metrics
     def _get_all_pull_metrics(self, base_url, token=None):
         values = []
-        metrics = [
+        metrics_to_get = [
             "issue_url",
             "commits_url",
             "state",
-            "open_issues",
-            "closed_issues",
+            "number",
+            "draft",
             "created_at",
             "updated_at",
             "closed_at",
             "merged_at",
         ]
+        metrics = []
         url = f"{base_url}/pulls?state=all"  # Fetch all pull requests (open and closed)
         response = self._make_request(url, token)
         pull_requests = response if isinstance(response, list) else []
+        pull_requests_quantity = len(pull_requests)
 
         for pull_request in pull_requests:
-            metric_values = [pull_request.get(metric, None) for metric in metrics]
+            metric_values = [
+                {"metric": metric, "value": pull_request.get(metric, None)}
+                for metric in metrics_to_get
+            ]
+            metrics.append(f"pull_request_{pull_request.get('number')}")
             values.append(metric_values)
 
         return {"metrics": metrics, "values": values}
@@ -192,23 +165,6 @@ class ParserGithub(GenericStaticABC):
         metrics.extend(return_of_comunity_metrics["metrics"])
         values.extend(return_of_comunity_metrics["values"])
 
-        # Get statistics metrics
-        return_of_statistics_metrics = self._get_statistics_metrics(
-            url, token_from_github
-        )
-        metrics.extend(return_of_statistics_metrics["metrics"])
-        values.extend(return_of_statistics_metrics["values"])
-
-        return_of_pull_metrics = self._get_pull_metrics(url, token_from_github)
-        metrics.extend(return_of_pull_metrics["metrics"])
-        values.extend(return_of_pull_metrics["values"])
-
-        return_of_get_all_pull_metrics = self._get_all_pull_metrics(
-            url, token_from_github
-        )
-        metrics.extend(return_of_get_all_pull_metrics["metrics"])
-        values.extend(return_of_get_all_pull_metrics["values"])
-
         return_of_get_statistics_weekly_commit_activity = (
             self._get_statistics_weekly_commit_activity(url, token_from_github)
         )
@@ -220,6 +176,10 @@ class ParserGithub(GenericStaticABC):
         )
         metrics.extend(return_of_get_pull_metrics_by_threshold["metrics"])
         values.extend(return_of_get_pull_metrics_by_threshold["values"])
+
+        return_of_get_pull_metrics = self._get_all_pull_metrics(url, token_from_github)
+        metrics.extend(return_of_get_pull_metrics["metrics"])
+        values.extend(return_of_get_pull_metrics["values"])
 
         return {"metrics": metrics, "values": values, "file_paths": keys}
 

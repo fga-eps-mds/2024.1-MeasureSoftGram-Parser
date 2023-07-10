@@ -16,7 +16,6 @@ BASE_URL = "https://api.github.com/repos/fga-eps-mds/2023-1-MeasureSoftGram-Pars
 
 def mock_requests(url, token=None):
     if url == BASE_URL:
-        print("url is Base_url")
         return_file = open("tests/mockfiles/response_api_github_general.json")
         return json.loads(return_file.read())
     if url == f"{BASE_URL}/community/profile":
@@ -53,11 +52,6 @@ def test_return_community():
         parserObject._get_comunity_metrics(BASE_URL)
         == EXPECTED_COMMUNITY_RETURN_METRICS
     )
-
-
-def test_pull_requests_metrics():
-    parserObject = get_object()
-    assert parserObject._get_pull_metrics(BASE_URL) == EXPECTED_PULL_METRICS
 
 
 def test_all_pull_metrics():
