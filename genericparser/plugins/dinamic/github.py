@@ -105,7 +105,6 @@ class ParserGithub(GenericStaticABC):
         url = f"{base_url}/pulls?state=all"  # Fetch all pull requests (open and closed)
         response = self._make_request(url, token)
         pull_requests = response if isinstance(response, list) else []
-        pull_requests_quantity = len(pull_requests)
 
         for pull_request in pull_requests:
             metric_values = [
