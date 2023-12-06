@@ -32,11 +32,17 @@ class ParserGithub(GenericStaticABC):
             started_at = datetime.fromisoformat(run["created_at"].replace("Z", "+00:00"))
             completed_at = datetime.fromisoformat(run["updated_at"].replace("Z", "+00:00"))
             feedback_time = completed_at - started_at
-            ci_feedback_times.append(feedback_time.total_seconds())  
+            ci_feedback_times.append(int(feedback_time.total_seconds()))  
 
         return {
-            "metric": "ci_feedback_times",
-            "values": ci_feedback_times
+            "metrics": [
+                "sum_ci_feedback_times",  
+                "total_builds"   
+            ],
+            "values": [
+                sum(ci_feedback_times), 
+                len(ci_feedback_times)   
+            ]
         }
 
     # Get statistics metrics functions
@@ -198,7 +204,7 @@ class ParserGithub(GenericStaticABC):
         values.extend(return_of_get_pull_metrics["values"])
 
         return_of_get_ci_feedback_times = self._get_ci_feedback_times(url, token_from_github)
-        metrics.extend(return_of_get_ci_feedback_times["metric"])
+        metrics.extend(return_of_get_ci_feedback_times["metrics"])
         values.extend(return_of_get_ci_feedback_times["values"])
 
         return {"metrics": metrics, "values": values, "file_paths": keys}
