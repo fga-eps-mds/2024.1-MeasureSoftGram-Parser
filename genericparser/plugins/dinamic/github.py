@@ -1,7 +1,7 @@
 import os
 from genericparser.plugins.domain.generic_class import GenericStaticABC
 import requests
-
+from datetime import datetime
 
 class ParserGithub(GenericStaticABC):
     token = None
