@@ -173,12 +173,12 @@ class ParserGithub(GenericStaticABC):
     def extract(self, input_file):
         token_from_github = (
             input_file.get("token", None)
-            if type(input_file) == dict
+            if type(input_file) is dict
             else None or os.environ.get("GITHUB_TOKEN", None) or self.token
         )
         repository = (
             input_file.get("repository", None)
-            if (type(input_file) == dict)
+            if (type(input_file) is dict)
             else input_file
         )
         metrics = []
