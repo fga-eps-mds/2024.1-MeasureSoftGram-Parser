@@ -3,6 +3,7 @@ from genericparser.plugins.domain.generic_class import GenericStaticABC
 import requests
 from datetime import datetime
 
+
 class ParserGithub(GenericStaticABC):
     token = None
 
@@ -26,24 +27,28 @@ class ParserGithub(GenericStaticABC):
         ci_feedback_times = []
         url = f"{base_url}/actions/runs"
         response = self._make_request(url, token)
-        workflow_runs = response.get("workflow_runs", [])
-        
-        for run in workflow_runs:
-            started_at = datetime.fromisoformat(run["created_at"].replace("Z", "+00:00"))
-            completed_at = datetime.fromisoformat(run["updated_at"].replace("Z", "+00:00"))
-            feedback_time = completed_at - started_at
-            ci_feedback_times.append(int(feedback_time.total_seconds()))  
 
-        return {
-            "metrics": [
-                "sum_ci_feedback_times",  
-                "total_builds"   
-            ],
-            "values": [
-                sum(ci_feedback_times), 
-                len(ci_feedback_times)   
-            ]
-        }
+        if response is not None:
+            workflow_runs = response.get("workflow_runs", [])
+
+            for run in workflow_runs:
+                started_at = datetime.fromisoformat(
+                    run["created_at"].replace("Z", "+00:00")
+                )
+                completed_at = datetime.fromisoformat(
+                    run["updated_at"].replace("Z", "+00:00")
+                )
+                feedback_time = completed_at - started_at
+                ci_feedback_times.append(int(feedback_time.total_seconds()))
+
+            result = {
+                "metrics": ["sum_ci_feedback_times", "total_builds"],
+                "values": [sum(ci_feedback_times), len(ci_feedback_times)],
+            }
+
+            return result
+        else:
+            return False
 
     # Get statistics metrics functions
     def _get_statistics_weekly_code_frequency(self, base_url, token=None):
@@ -203,9 +208,13 @@ class ParserGithub(GenericStaticABC):
         metrics.extend(return_of_get_pull_metrics["metrics"])
         values.extend(return_of_get_pull_metrics["values"])
 
-        return_of_get_ci_feedback_times = self._get_ci_feedback_times(url, token_from_github)
-        metrics.extend(return_of_get_ci_feedback_times["metrics"])
-        values.extend(return_of_get_ci_feedback_times["values"])
+        return_of_get_ci_feedback_times = self._get_ci_feedback_times(
+            url, token_from_github
+        )
+
+        if return_of_get_ci_feedback_times:
+            metrics.extend(return_of_get_ci_feedback_times["metrics"])
+            values.extend(return_of_get_ci_feedback_times["values"])
 
         return {"metrics": metrics, "values": values, "file_paths": keys}
 
