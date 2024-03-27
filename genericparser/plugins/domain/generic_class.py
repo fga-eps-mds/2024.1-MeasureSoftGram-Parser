@@ -19,7 +19,7 @@ class GenericStaticABC(metaclass=abc.ABCMeta):
     def get_if_input_is_file_or_str(self, input_value):
         if isinstance(input_value, list) or isinstance(input_value, dict):
             return input_value
-        if type(input_value) == str and os.path.isfile(input_value):
+        if type(input_value) is str and os.path.isfile(input_value):
             path = os.path.abspath(input_value)
             with open(path, "r") as file:
                 load = json.load(file)
