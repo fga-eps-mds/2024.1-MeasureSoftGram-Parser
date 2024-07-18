@@ -45,5 +45,5 @@ jobs:
                   fail_ci_if_error: true
                   files: ./coverage.xml
                   flags: unittests
-                  name: 2024-1-MeasureSoftGram-Parser
+                  name: 2024.1-MeasureSoftGram-Parser
                   verbose: true
