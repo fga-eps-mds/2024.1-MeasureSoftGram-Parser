@@ -21,6 +21,7 @@ def mock_requests(url, token=None):
         return_file = open("tests/mockfiles/response_api_github_throughput.json")
         return json.loads(return_file.read())
 
+
 def get_object():
     parser = ParserGithub()
     parser._make_request = mock_requests
