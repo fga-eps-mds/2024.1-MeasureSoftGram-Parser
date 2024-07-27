@@ -14,11 +14,18 @@ def mock_requests(url, token=None):
     if url == BASE_URL:
         return_file = open("tests/mockfiles/response_api_github_general.json")
         return json.loads(return_file.read())
+    if url == f"{BASE_URL}/actions/runs":
+        return_file = open("tests/mockfiles/response_api_github_ci_feedback_times.json")
+        return json.loads(return_file.read())
+    if url == f"{BASE_URL}/pulls?state=all":
+        return_file = open("tests/mockfiles/response_api_github_throughput.json")
+        return json.loads(return_file.read())
 
 def get_object():
     parser = ParserGithub()
     parser._make_request = mock_requests
     return parser
+
 
 def test_extract_method():
     parserObject = get_object()
