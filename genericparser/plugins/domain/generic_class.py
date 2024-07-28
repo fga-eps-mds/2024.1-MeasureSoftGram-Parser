@@ -14,7 +14,10 @@ class GenericStaticABC(metaclass=abc.ABCMeta):
         input_value = kwargs.get("input_value")
         filters = kwargs.get("filters")
         input_value_imported = self.get_if_input_is_file_or_str(input_value)
-        return_value = self.extract(input_value_imported, filters)
+        return_value = self.extract(**{
+            "input_file":input_value_imported,
+            "filters": filters,
+        })
         return self.validate_return_type(return_value)
 
     def get_if_input_is_file_or_str(self, input_value):

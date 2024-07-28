@@ -58,10 +58,10 @@ class ParserGithub(GenericStaticABC):
             if isinstance(response, list) and response:
                 return response
         return []
-        
+
     def _get_throughput(self, base_url, token=None, filters=None):
         values = []
-        label_list = filters["labels"].split(",") if filters and filters["labels"] else ["US","User Story","User Stories"]
+        label_list = filters["labels"].split(",") if filters and filters["labels"] else []
         issues = self._check_requests(
             base_url,
             "issues?state=all&labels=",
@@ -84,7 +84,9 @@ class ParserGithub(GenericStaticABC):
             "values": values,
         }
 
-    def extract(self, input_file, filters):
+    def extract(self, **kwargs):
+        input_file = kwargs.get("input_file")
+        filters = kwargs.get("filters")
         token_from_github = (
             input_file.get("token", None)
             if type(input_file) is dict
