@@ -15,12 +15,13 @@ class GenericParser:
         input_value = kwargs.get("input_value")
         type_input = kwargs.get("type_input")
         filters = kwargs.get("filters")
+        workflows = kwargs.get("workflows")
         accepted_types = self.get_accepted_types()
         if type_input not in accepted_types:
             raise Exception("Type not accepted by parser")
 
         path_plugin = self.get_path_plugin(type_input)
-        return_from_plugin = self.call_plugin(path_plugin, input_value, filters)
+        return_from_plugin = self.call_plugin(path_plugin, input_value, filters, workflows)
 
         if isinstance(return_from_plugin, pd.DataFrame):
             self.df = return_from_plugin
@@ -39,10 +40,10 @@ class GenericParser:
     def get_path_plugin(self, type_input):
         return ACCEPT_PLUGINS.get(type_input)
 
-    def call_plugin(self, path_plugin, file_input, filters):
+    def call_plugin(self, path_plugin, file_input, filters, workflows):
         plugin = importlib.import_module(path_plugin)
         object = plugin.main()
-        return object.parser(**{"input_value": file_input, "filters": filters})
+        return object.parser(**{"input_value": file_input, "filters": filters, "workflows": workflows})
 
     def transform_df_to_python_dict(self, pandas_dataframe: pd.DataFrame):
         returned_dict = {}

@@ -23,7 +23,7 @@ class ParserGithub(GenericStaticABC):
             print("error making request to github api in url: ", url, e)
         return response.json() if response.status_code == 200 else {}
 
-    def _get_ci_feedback_times(self, base_url, token=None):
+    def _get_ci_feedback_times(self, base_url, token=None, workflows=[]):
         ci_feedback_times = []
         url = f"{base_url}/actions/runs"
         response = self._make_request(url, token)
@@ -32,6 +32,8 @@ class ParserGithub(GenericStaticABC):
             workflow_runs = response.get("workflow_runs", [])
 
             for run in workflow_runs:
+                if len(workflows) and run["name"] not in workflows: continue
+
                 started_at = datetime.fromisoformat(
                     run["created_at"].replace("Z", "+00:00")
                 )
@@ -87,6 +89,7 @@ class ParserGithub(GenericStaticABC):
     def extract(self, **kwargs):
         input_file = kwargs.get("input_file")
         filters = kwargs.get("filters")
+        workflows = kwargs.get("workflows")
         token_from_github = (
             input_file.get("token", None)
             if type(input_file) is dict
@@ -110,7 +113,7 @@ class ParserGithub(GenericStaticABC):
         values.extend(return_of_get_throughput["values"])
 
         return_of_get_ci_feedback_times = self._get_ci_feedback_times(
-            url, token_from_github
+            url, token_from_github, workflows
         )
 
         if return_of_get_ci_feedback_times:
