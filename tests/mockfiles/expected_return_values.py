@@ -7,11 +7,11 @@ EXPECT_EXTRACT_METRICS = {
         "total_builds",
     ],
     "values": [
-        12,
-        11,
-        0.9166666666666666,
-        23577,
+        22,
+        17,
+        0.7727272727272727,
+        998,
         30,
     ],
-    "file_paths": "fga-eps-mds/2023-1-MeasureSoftGram-Parser",
+    "file_paths": "fga-eps-mds/2023-1-MeasureSoftGram-DOC",
 }

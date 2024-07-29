@@ -50,13 +50,26 @@ class ParserGithub(GenericStaticABC):
         else:
             return False
 
-    def _get_pull_metrics_by_threshold(self, base_url, token=None):
+    def _check_requests(self, base_url, params, values, token=None):
+        for value in values:
+            url_value = value.replace(" ", "%20")
+            url = f"{base_url}/{params}{url_value}"
+            response = self._make_request(url, token)
+            if isinstance(response, list) and response:
+                return response
+        return []
+
+    def _get_throughput(self, base_url, token=None, filters=None):
         values = []
-        url = f"{base_url}/pulls?state=all"
-        response = self._make_request(url, token)
-        pull_requests = response if isinstance(response, list) else []
-        total_issues = len(pull_requests)
-        resolved_issues = sum(1 for pr in pull_requests if pr["state"] == "closed")
+        label_list = filters["labels"].split(",") if filters and filters["labels"] else []
+        issues = self._check_requests(
+            base_url,
+            "issues?state=all&labels=",
+            label_list,
+            token,
+        )
+        total_issues = len(issues)
+        resolved_issues = sum(1 for issue in issues if issue["state"] == "closed")
 
         values.extend(
             [
@@ -71,7 +84,9 @@ class ParserGithub(GenericStaticABC):
             "values": values,
         }
 
-    def extract(self, input_file):
+    def extract(self, **kwargs):
+        input_file = kwargs.get("input_file")
+        filters = kwargs.get("filters")
         token_from_github = (
             input_file.get("token", None)
             if type(input_file) is dict
@@ -88,11 +103,11 @@ class ParserGithub(GenericStaticABC):
         owner, repository_name = repository.split("/")
         url = f"https://api.github.com/repos/{owner}/{repository_name}"
 
-        return_of_get_pull_metrics_by_threshold = self._get_pull_metrics_by_threshold(
-            url, token_from_github
+        return_of_get_throughput = self._get_throughput(
+            url, token_from_github, filters
         )
-        metrics.extend(return_of_get_pull_metrics_by_threshold["metrics"])
-        values.extend(return_of_get_pull_metrics_by_threshold["values"])
+        metrics.extend(return_of_get_throughput["metrics"])
+        values.extend(return_of_get_throughput["values"])
 
         return_of_get_ci_feedback_times = self._get_ci_feedback_times(
             url, token_from_github

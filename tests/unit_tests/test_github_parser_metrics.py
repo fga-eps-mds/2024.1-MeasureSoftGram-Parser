@@ -7,7 +7,7 @@ import json
 
 
 # @pytest.mark.parametrize()
-BASE_URL = "https://api.github.com/repos/fga-eps-mds/2023-1-MeasureSoftGram-Parser"
+BASE_URL = "https://api.github.com/repos/fga-eps-mds/2023-1-MeasureSoftGram-DOC"
 
 
 def mock_requests(url, token=None):
@@ -17,7 +17,7 @@ def mock_requests(url, token=None):
     if url == f"{BASE_URL}/actions/runs":
         return_file = open("tests/mockfiles/response_api_github_ci_feedback_times.json")
         return json.loads(return_file.read())
-    if url == f"{BASE_URL}/pulls?state=all":
+    if url == f"{BASE_URL}/issues?state=all&labels=US":
         return_file = open("tests/mockfiles/response_api_github_throughput.json")
         return json.loads(return_file.read())
 
@@ -31,6 +31,9 @@ def get_object():
 def test_extract_method():
     parserObject = get_object()
     assert (
-        parserObject.extract("fga-eps-mds/2023-1-MeasureSoftGram-Parser")
+        parserObject.extract(**{
+            "input_file": "fga-eps-mds/2023-1-MeasureSoftGram-DOC",
+            "filters": {"labels": "US"},
+        })
         == EXPECT_EXTRACT_METRICS
     )
