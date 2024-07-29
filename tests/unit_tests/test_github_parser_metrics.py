@@ -34,6 +34,7 @@ def test_extract_method():
         parserObject.extract(**{
             "input_file": "fga-eps-mds/2023-1-MeasureSoftGram-DOC",
             "filters": {"labels": "US"},
+            "workflows": ["pages build and deployment"],
         })
         == EXPECT_EXTRACT_METRICS
     )
