@@ -13,12 +13,10 @@ class GenericStaticABC(metaclass=abc.ABCMeta):
             raise Exception("kwargs must have input_value key")
         input_value = kwargs.get("input_value")
         filters = kwargs.get("filters")
-        workflows = kwargs.get("workflows")
         input_value_imported = self.get_if_input_is_file_or_str(input_value)
         return_value = self.extract(**{
             "input_file": input_value_imported,
             "filters": filters,
-            "workflows": workflows,
         })
         return self.validate_return_type(return_value)
 
