@@ -84,7 +84,6 @@ class ParserGithub(GenericStaticABC):
                 and (closed_at is None
                 or (closed_at is not None and closed_at >= since)))
 
-
     def _get_throughput(self, base_url, token=None, filters=None):
         values = []
         issues = []
