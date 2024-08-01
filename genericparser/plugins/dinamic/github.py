@@ -28,6 +28,13 @@ class ParserGithub(GenericStaticABC):
             return True
         if "workflows" in filters and run["name"] not in filters["workflows"]:
             return False
+        if "dates" in filters:
+            dates = filters["dates"].split("-")
+            run_date = datetime.strptime(run["run_started_at"], "%Y-%m-%dT%H:%M:%SZ")
+            start = datetime.strptime(dates[0], "%d/%m/%Y")
+            end = datetime.strptime(dates[1], "%d/%m/%Y")
+            if run_date < start or run_date > end:
+                return False
         return True
 
     def _get_ci_feedback_times(self, base_url, token=None, filters=None):
