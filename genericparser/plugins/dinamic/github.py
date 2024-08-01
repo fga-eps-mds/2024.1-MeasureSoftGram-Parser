@@ -61,23 +61,45 @@ class ParserGithub(GenericStaticABC):
             return False
 
     def _check_requests(self, base_url, params, values, token=None):
+        results = []
         for value in values:
             url_value = value.replace(" ", "%20")
             url = f"{base_url}/{params}{url_value}"
             response = self._make_request(url, token)
-            if isinstance(response, list) and response:
-                return response
-        return []
+            if response and isinstance(response, list):
+                for result in response:
+                    if result not in results:
+                        results.append(result)
+        return results
+
+    def _is_valid_time(self, value, dates):
+        date_since, date_until = dates
+
+        created_at = datetime.strptime(value["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+        closed_at = datetime.strptime(value["closed_at"], "%Y-%m-%dT%H:%M:%SZ") if value["closed_at"] else None
+        since = datetime.strptime(date_since, "%d/%m/%Y")
+        until = datetime.strptime(date_until, "%d/%m/%Y")
+
+        return ((created_at <= until)
+                and (closed_at is None
+                or (closed_at is not None and closed_at >= since)))
 
     def _get_throughput(self, base_url, token=None, filters=None):
         values = []
+        issues = []
         label_list = filters["labels"].split(",") if filters and filters["labels"] else []
-        issues = self._check_requests(
+        dates = filters["dates"].split("-") if filters and filters["dates"] else None
+        response = self._check_requests(
             base_url,
             "issues?state=all&labels=",
             label_list,
             token,
         )
+
+        for issue in response:
+            if dates is None or self._is_valid_time(issue, dates):
+                issues.append(issue)
+
         total_issues = len(issues)
         resolved_issues = sum(1 for issue in issues if issue["state"] == "closed")
 

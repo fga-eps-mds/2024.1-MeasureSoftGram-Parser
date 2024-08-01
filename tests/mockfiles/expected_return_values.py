@@ -7,9 +7,9 @@ EXPECT_EXTRACT_METRICS = {
         "total_builds",
     ],
     "values": [
-        22,
-        17,
-        0.7727272727272727,
+        16,
+        11,
+        0.6875,
         595,
         15,
     ],
