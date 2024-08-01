@@ -43,7 +43,7 @@ class ParserGithub(GenericStaticABC):
                     continue
 
                 started_at = datetime.fromisoformat(
-                    run["created_at"].replace("Z", "+00:00")
+                    run["run_started_at"].replace("Z", "+00:00")
                 )
                 completed_at = datetime.fromisoformat(
                     run["updated_at"].replace("Z", "+00:00")
