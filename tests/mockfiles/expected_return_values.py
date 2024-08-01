@@ -10,8 +10,8 @@ EXPECT_EXTRACT_METRICS = {
         16,
         11,
         0.6875,
-        595,
-        15,
+        513,
+        13,
     ],
     "file_paths": "fga-eps-mds/2023-1-MeasureSoftGram-DOC",
 }
