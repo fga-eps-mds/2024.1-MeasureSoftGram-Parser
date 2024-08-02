@@ -26,9 +26,9 @@ class ParserGithub(GenericStaticABC):
     def _should_compute_workflow_run(self, run, filters):
         if filters is None:
             return True
-        if "workflows" in filters and run["name"] not in filters["workflows"]:
+        if run["name"] not in filters["workflows"]:
             return False
-        if "dates" in filters:
+        if filters["dates"] is not None:
             dates = filters["dates"].split("-")
             run_date = datetime.strptime(run["run_started_at"], "%Y-%m-%dT%H:%M:%SZ")
             start = datetime.strptime(dates[0], "%d/%m/%Y")

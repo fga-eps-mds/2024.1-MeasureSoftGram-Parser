@@ -2,6 +2,7 @@ import pytest
 from genericparser.plugins.dinamic.github import ParserGithub
 from tests.mockfiles.expected_return_values import (
     EXPECT_EXTRACT_METRICS,
+    EXPECT_EXTRACT_METRICS_DATE_NONE,
 )
 import json
 
@@ -28,7 +29,7 @@ def get_object():
     return parser
 
 
-def test_extract_method():
+def test_extract_method_all_filters():
     parserObject = get_object()
     assert (
         parserObject.extract(**{
@@ -38,4 +39,16 @@ def test_extract_method():
                         "dates": "20/06/2023-15/07/2023"}
         })
         == EXPECT_EXTRACT_METRICS
+    )
+
+def test_extract_method_date_none():
+    parserObject = get_object()
+    assert (
+        parserObject.extract(**{
+            "input_file": "fga-eps-mds/2023-1-MeasureSoftGram-DOC",
+            "filters": {"labels": "US",
+                        "workflows": ["pages build and deployment"],
+                        "dates": None}
+        })
+        == EXPECT_EXTRACT_METRICS_DATE_NONE
     )
