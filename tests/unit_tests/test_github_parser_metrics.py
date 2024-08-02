@@ -41,6 +41,7 @@ def test_extract_method_all_filters():
         == EXPECT_EXTRACT_METRICS
     )
 
+
 def test_extract_method_date_none():
     parserObject = get_object()
     assert (
