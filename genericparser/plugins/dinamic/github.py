@@ -139,7 +139,8 @@ class ParserGithub(GenericStaticABC):
         metrics = []
         keys = repository
         values = []
-        owner, repository_name = repository.split("/")
+        splits = repository.split("/")
+        owner, repository_name = splits[-2], splits[-1]
         url = f"https://api.github.com/repos/{owner}/{repository_name}"
 
         return_of_get_throughput = self._get_throughput(
